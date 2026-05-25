@@ -207,4 +207,58 @@
     );
     ctaObserver.observe(ctaBtn);
   }
+
+  /* CRT-рябь / шум старого телевизора */
+  (function initCrtNoise() {
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+
+    const canvas = document.getElementById("crt-noise-canvas");
+    if (!canvas) return;
+
+    const ctx = canvas.getContext("2d", { alpha: true });
+    if (!ctx) return;
+
+    let width = 0;
+    let height = 0;
+    let frame = null;
+    let imageData = null;
+
+    function resize() {
+      width = Math.max(1, Math.floor(window.innerWidth / 2));
+      height = Math.max(1, Math.floor(window.innerHeight / 2));
+      canvas.width = width;
+      canvas.height = height;
+      imageData = ctx.createImageData(width, height);
+    }
+
+    function draw() {
+      const data = imageData.data;
+      for (let i = 0; i < data.length; i += 4) {
+        const shade = (Math.random() * 255) | 0;
+        data[i] = shade;
+        data[i + 1] = shade;
+        data[i + 2] = shade;
+        data[i + 3] = (Math.random() * 28) | 0;
+      }
+      ctx.putImageData(imageData, 0, 0);
+      frame = requestAnimationFrame(draw);
+    }
+
+    resize();
+    window.addEventListener("resize", resize, { passive: true });
+    draw();
+
+    document.addEventListener(
+      "visibilitychange",
+      () => {
+        if (document.hidden) {
+          if (frame) cancelAnimationFrame(frame);
+          frame = null;
+        } else if (!frame) {
+          draw();
+        }
+      },
+      { passive: true }
+    );
+  })();
 })();
