@@ -41,50 +41,48 @@
   if (form && success) {
     form.addEventListener("submit", (e) => {
       e.preventDefault();
-      const email = form.querySelector("#email");
-      if (!email.value.trim() || !email.validity.valid) {
-        email.focus();
-        return;
-      }
       form.hidden = true;
       success.hidden = false;
     });
   }
 
-  /* Анимация линий в блоке «Решение» */
-  const solutionSection = document.querySelector(".solution");
+  /* Анимация декоративных линий (решение + CTA) */
   const prefersReduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
-  function activateSolutionLines() {
-    solutionSection?.classList.add("lines-active");
-  }
+  function setupDecoLines(selector) {
+    const section = document.querySelector(selector);
+    if (!section) return;
 
-  if (solutionSection) {
+    const activate = () => section.classList.add("lines-active");
+
     if (prefersReduced) {
-      activateSolutionLines();
-    } else {
-      const linesObserver = new IntersectionObserver(
-        (entries) => {
-          entries.forEach((entry) => {
-            if (entry.isIntersecting) {
-              activateSolutionLines();
-              linesObserver.disconnect();
-            }
-          });
-        },
-        { threshold: 0.08, rootMargin: "80px 0px 0px 0px" }
-      );
-      linesObserver.observe(solutionSection);
-
-      /* Если блок уже в зоне видимости при загрузке */
-      requestAnimationFrame(() => {
-        const rect = solutionSection.getBoundingClientRect();
-        if (rect.top < window.innerHeight * 0.92 && rect.bottom > 0) {
-          activateSolutionLines();
-        }
-      });
+      activate();
+      return;
     }
+
+    const linesObserver = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            activate();
+            linesObserver.disconnect();
+          }
+        });
+      },
+      { threshold: 0.08, rootMargin: "80px 0px 0px 0px" }
+    );
+    linesObserver.observe(section);
+
+    requestAnimationFrame(() => {
+      const rect = section.getBoundingClientRect();
+      if (rect.top < window.innerHeight * 0.92 && rect.bottom > 0) {
+        activate();
+      }
+    });
   }
+
+  setupDecoLines(".solution");
+  setupDecoLines(".final-cta");
 
   /* Scroll reveal */
   const revealEls = document.querySelectorAll(".reveal-scroll");
