@@ -351,15 +351,13 @@ ul { list-style: none; margin: 0; padding: 0; }
 .btn-chamfer-outline {
   position: relative;
   color: #0a0a0a;
-  background: rgba(255, 255, 255, 0.2);
-  backdrop-filter: blur(6px);
-  -webkit-backdrop-filter: blur(6px);
+  background: transparent;
   box-shadow:
     inset 0 0 0 2px #0a0a0a,
     -4px -4px 0 0 rgba(10, 10, 10, 0.08);
 }
 .btn-chamfer-outline:hover {
-  background: rgba(255, 255, 255, 0.45);
+  background: transparent;
   box-shadow:
     inset 0 0 0 2px #0a0a0a,
     -5px -5px 0 0 rgba(10, 10, 10, 0.12);
