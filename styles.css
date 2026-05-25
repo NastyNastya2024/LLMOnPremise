@@ -1123,6 +1123,7 @@ ul { list-style: none; margin: 0; padding: 0; }
   font-size: clamp(1.75rem, 4vw, 2.75rem);
   letter-spacing: -0.02em;
   margin: 0 0 1rem;
+  white-space: nowrap;
 }
 .cta-lead {
   font-size: 1.05rem;
@@ -1287,6 +1288,10 @@ ul { list-style: none; margin: 0; padding: 0; }
   .waitlist-form { flex-direction: column; align-items: stretch; }
   .glass-input { max-width: none; }
   .btn-lg { width: 100%; }
+  .cta-title {
+    white-space: normal;
+    font-size: clamp(1.35rem, 5.5vw, 1.75rem);
+  }
 }
 
 /* CRT / старый телевизор — рябь по всему сайту */
