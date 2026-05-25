@@ -6,7 +6,7 @@
   --card-solid: #0f0f15;
   --border: #1a1a24;
   --text: #e8e9f3;
-  --text-muted: #6c6f85;
+  --text-muted: #9a9eb8;
   --accent: #627cff;
   --accent-dim: rgba(98, 124, 255, 0.12);
   --accent-glow: rgba(98, 124, 255, 0.4);
@@ -648,7 +648,7 @@ ul { list-style: none; margin: 0; padding: 0; }
   animation-delay: 0.18s;
 }
 .sol-line--4 {
-  top: 9%;
+  top: 8%;
   left: auto;
   right: 0;
   width: min(18vw, 160px);
@@ -676,15 +676,15 @@ ul { list-style: none; margin: 0; padding: 0; }
   animation-delay: 0.38s;
 }
 
-/* Низ — под текстом */
+/* Низ — тот же шаг, что между 2-й и 3-й линией (29%) */
 .sol-line--7 {
-  top: 82%;
+  top: 65%;
   left: 0;
   width: min(30vw, 300px);
   animation-delay: 0.44s;
 }
 .sol-line--8 {
-  top: 86%;
+  top: 69%;
   left: auto;
   right: 0;
   width: min(28vw, 280px);
@@ -1197,8 +1197,8 @@ ul { list-style: none; margin: 0; padding: 0; }
   .solution-deco { inset: 0 -8%; }
   .sol-line--5 { left: 0; width: min(36vw, 180px); }
   .sol-line--6 { left: auto; right: 0; width: min(36vw, 180px); }
-  .sol-line--7 { top: 76%; width: min(34vw, 160px); }
-  .sol-line--8 { top: 80%; width: min(32vw, 150px); }
+  .sol-line--7 { top: 62%; width: min(34vw, 160px); }
+  .sol-line--8 { top: 66%; width: min(32vw, 150px); }
   .footer-grid { grid-template-columns: 1fr; }
   .hero-bg img { object-position: 70% center; }
   .hero-copy { margin-left: 0; width: 100%; }
