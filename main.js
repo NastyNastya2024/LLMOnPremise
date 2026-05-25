@@ -1,19 +1,25 @@
 (function () {
+  const EASE = "cubic-bezier(0.2, 0.9, 0.4, 1.1)";
   const header = document.querySelector(".site-header");
   const navToggle = document.querySelector(".nav-toggle");
   const mobileNav = document.getElementById("mobile-nav");
   const form = document.getElementById("waitlist-form");
   const success = document.getElementById("waitlist-success");
+  const ctaBtn = document.getElementById("cta-btn");
 
-  /* Sticky header */
+  /* Header scroll + тема на hero */
+  const hero = document.querySelector(".hero");
   function onScroll() {
-    if (window.scrollY > 40) {
-      header.classList.add("scrolled");
-    } else {
-      header.classList.remove("scrolled");
+    if (!header) return;
+    const y = window.scrollY;
+    header.classList.toggle("scrolled", y > 40);
+    if (hero) {
+      const heroBottom = hero.offsetTop + hero.offsetHeight - header.offsetHeight;
+      header.classList.toggle("on-hero", y < heroBottom);
     }
   }
   window.addEventListener("scroll", onScroll, { passive: true });
+  window.addEventListener("resize", onScroll, { passive: true });
   onScroll();
 
   /* Mobile nav */
@@ -46,22 +52,127 @@
   }
 
   /* Scroll reveal */
-  const revealEls = document.querySelectorAll(
-    ".section-title, .section-lead, .problem-card, .step, .chart-block, .cap-card, .benefit-card, .metric, .terminal-window, .faq-item"
-  );
-  revealEls.forEach((el) => el.classList.add("reveal"));
+  const revealEls = document.querySelectorAll(".reveal-scroll");
+  const prefersReduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
-  const observer = new IntersectionObserver(
-    (entries) => {
-      entries.forEach((entry) => {
-        if (entry.isIntersecting) {
-          entry.target.classList.add("visible");
-        }
-      });
-    },
-    { threshold: 0.08, rootMargin: "0px 0px -40px 0px" }
-  );
-  revealEls.forEach((el) => observer.observe(el));
+  if (prefersReduced) {
+    revealEls.forEach((el) => el.classList.add("is-visible"));
+  } else {
+    const revealObserver = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add("is-visible");
+            revealObserver.unobserve(entry.target);
 
-  /* Animate bars on scroll */
+            if (entry.target.id === "solution-terminal") {
+              startTypewriter();
+            }
+          }
+        });
+      },
+      { threshold: 0.12, rootMargin: "0px 0px -48px 0px" }
+    );
+    revealEls.forEach((el) => revealObserver.observe(el));
+  }
+
+  /* Typewriter — solution terminal */
+  const terminalLines = [
+    { text: "> Развертывание на GPU...", class: "line-dim" },
+    { text: "> Обучение модели под ваши задачи...", class: "line-dim" },
+    { text: "✓ Готово.", class: "line-ok" },
+  ];
+  let typewriterStarted = false;
+
+  function startTypewriter() {
+    if (typewriterStarted) return;
+    typewriterStarted = true;
+    const out = document.getElementById("typewriter-output");
+    if (!out) return;
+
+    const delayStart = 300;
+    let lineIndex = 0;
+    let charIndex = 0;
+    let currentLine = "";
+
+    function typeNext() {
+      if (lineIndex >= terminalLines.length) return;
+      const line = terminalLines[lineIndex];
+      if (charIndex === 0) {
+        currentLine = document.createElement("div");
+        currentLine.className = line.class;
+        out.appendChild(currentLine);
+      }
+      if (charIndex < line.text.length) {
+        currentLine.textContent += line.text[charIndex];
+        charIndex++;
+        setTimeout(typeNext, 28);
+      } else {
+        lineIndex++;
+        charIndex = 0;
+        setTimeout(typeNext, 200);
+      }
+    }
+
+    setTimeout(typeNext, delayStart);
+  }
+
+  /* Counter animation for summary */
+  let countersDone = false;
+
+  function animateCounters(section) {
+    if (countersDone || !section) return;
+    const values = section.querySelectorAll(".summary-value[data-count]");
+    if (!values.length) return;
+    countersDone = true;
+
+    values.forEach((el) => {
+      const target = parseInt(el.dataset.count, 10);
+      const suffix = el.dataset.suffix || "";
+      const duration = 800;
+      const start = performance.now();
+
+      function tick(now) {
+        const t = Math.min((now - start) / duration, 1);
+        const eased = 1 - Math.pow(1 - t, 3);
+        const current = Math.round(target * eased);
+        el.textContent = current + suffix;
+        if (t < 1) requestAnimationFrame(tick);
+      }
+      requestAnimationFrame(tick);
+    });
+  }
+
+  /* Summary counters on scroll */
+  const summarySection = document.getElementById("summary");
+  if (summarySection && !prefersReduced) {
+    const summaryObserver = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            animateCounters(summarySection);
+            summaryObserver.disconnect();
+          }
+        });
+      },
+      { threshold: 0.3 }
+    );
+    summaryObserver.observe(summarySection);
+  }
+
+  /* CTA pulse on first view */
+  if (ctaBtn && !prefersReduced) {
+    const ctaObserver = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            ctaBtn.classList.add("pulse-once");
+            ctaObserver.disconnect();
+          }
+        });
+      },
+      { threshold: 0.5 }
+    );
+    ctaObserver.observe(ctaBtn);
+  }
 })();
