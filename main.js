@@ -51,9 +51,43 @@
     });
   }
 
+  /* Анимация линий в блоке «Решение» */
+  const solutionSection = document.querySelector(".solution");
+  const prefersReduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  function activateSolutionLines() {
+    solutionSection?.classList.add("lines-active");
+  }
+
+  if (solutionSection) {
+    if (prefersReduced) {
+      activateSolutionLines();
+    } else {
+      const linesObserver = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((entry) => {
+            if (entry.isIntersecting) {
+              activateSolutionLines();
+              linesObserver.disconnect();
+            }
+          });
+        },
+        { threshold: 0.08, rootMargin: "80px 0px 0px 0px" }
+      );
+      linesObserver.observe(solutionSection);
+
+      /* Если блок уже в зоне видимости при загрузке */
+      requestAnimationFrame(() => {
+        const rect = solutionSection.getBoundingClientRect();
+        if (rect.top < window.innerHeight * 0.92 && rect.bottom > 0) {
+          activateSolutionLines();
+        }
+      });
+    }
+  }
+
   /* Scroll reveal */
   const revealEls = document.querySelectorAll(".reveal-scroll");
-  const prefersReduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
   if (prefersReduced) {
     revealEls.forEach((el) => el.classList.add("is-visible"));
